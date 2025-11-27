@@ -34,7 +34,7 @@ The data format and result format are identical in both scenarios described in t
 
 Run MonoGST+ for `example`: `./MonoGST example`.
 
-Run the ablation experiments of MonoGST+ for `example`: `./MonoGST example x`, `x` is a parameter to control the variants of MonoGST+. If x=0, it will run MonoGST; if x=6, it will run `w/o suspension`, ; if x=5, it will run `w/o mono.`; if x=3, it will run `trivial edges`; if x=7, it will run MonoGST+.
+Run the ablation experiments of MonoGST+ for `example`: `./MonoGST example x`, `x` is an integer parameter to control the variants of MonoGST+. If x=0, it will run MonoGST; if x=6, it will run `w/o suspension`; if x=5, it will run `w/o mono.`; if x=3, it will run `trivial edges`; if x=7, it will run MonoGST+.
 
 Run other baseline `b` except KeyKG+ for `example`: `./b example`, you need replace "`b`" to the name of the baseline.
 
