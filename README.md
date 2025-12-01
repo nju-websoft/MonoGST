@@ -34,11 +34,11 @@ The data format and result format are identical in both scenarios described in t
 
 Run MonoGST+ for `example`: `./MonoGST example`.
 
-Run the ablation experiments of MonoGST+ for `example`: `./MonoGST example x`, `x` is an integer parameter to control the variants of MonoGST+. If x=0, it will run MonoGST; if x=6, it will run `w/o suspension`; if x=5, it will run `w/o mono.`; if x=3, it will run `trivial edges`; if x=7, it will run MonoGST+.
+Run the ablation experiments of MonoGST+ for `example`: `./MonoGST example x`, `x` is an integer parameter to control the variants of MonoGST+. If x=0, it will run `MonoGST`; if x=6, it will run `w/o suspension`; if x=5, it will run `w/o mono.`; if x=3, it will run `trivial edges`; if x=7, it will run `MonoGST+`.
 
 Run other baseline `b` except KeyKG+ for `example`: `./b example`, you need replace "`b`" to the name of the baseline.
 
-Before run KeyKG+, you need first build the index of the graph, use `./KKG_Index` to finish it, then you could use `./KKG_Run` to answer all queries for the graph.
+Before run KeyKG+, you need first build the index of the graph, use `./KKG_Index example` to finish it, then you could use `./KKG_Run example` to answer all queries for the graph.
 
 The result of the algorithm `b` for example will be replaced in directory `results/example_b_result.txt`, each line of the text outputs the result of an inquiry, with the first value being the time (in seconds) and the second value being the sum of the edge weights in GST. Specifically, the index of the KeyKG+ and its related information will be output to the directory `KeyKG_index/example/index.bin`.
 
