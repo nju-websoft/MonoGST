@@ -23,15 +23,9 @@ private:
     vector <vector <int> > prev;
     vector <vector<int>> LS;
     vector <vector<int>> rk;
-    vector <vector <pair <edgetype, int> > > cost_list_1;
 
-    vector <pair<edgetype, int> > cost_list;
-    vector <vector <edgetype> > dis_allowed_mx;
-    vector <edgetype> dis_allowed_mx_1;
-    vector <vector <array<edgetype, 3> > > dis_allowed_mx_2;
-    vector <vector <int> > idx;
-    vector <pair<int, int> > f_idx;
-    vector <int> used_idx;
+    vector <edgetype> Dsum;
+    vector <edgetype> D_1;
 
     vector <vector<pair<int, edgetype>> > ed;
     vector <int> deg;
@@ -57,8 +51,6 @@ private:
         cover_size_cnt = vector <int> (g + 1, 0);
         cover_size_dijk = vector <double> (g + 1, 0);
     }
-
-    int parameter; // 末位为 0 表示启动 val_2
 
     vector <edgetype> dis;
     vector <int> pre;
@@ -125,7 +117,6 @@ private:
         dist = vector <vector <edgetype> > (g, vector <edgetype> (n + 1, INF));
         prev = vector <vector <int> > (g, vector <int> (n + 1, -1));
         LS = vector<vector<int>> (n + 1, vector<int>(g));
-        cost_list_1 = vector <vector <pair <edgetype, int> > > (g + 1, vector <pair <edgetype, int> >(1));
 
         for (auto& v : LS) iota(v.begin(), v.end(), 0);
         edgetype max_dis = 0, D = graph.get_min_weight();
@@ -167,7 +158,6 @@ private:
             {
                 auto [d, u] = dequeue();
                 if(extended[u]) continue;
-                cost_list_1[ki].push_back({d, u});
                 extended[u] = 1;
                 max_dis = max(max_dis, d);
                 for(auto [v, w] : graph.get_adj()[u])
@@ -185,11 +175,18 @@ private:
 
 
         rk = vector<vector<int>> (n + 1, vector<int>(g));
+        Dsum = vector <edgetype> (g + 1, INF);
+        D_1 = vector <edgetype> (g + 1, INF);
         for(int c = 1; c <= n; c++)
         {
             sort(LS[c].begin() + 1, LS[c].end(), [&](int i, int j){return dist[i][c] < dist[j][c];});
+
+            edgetype sum=0;
             for(int j = 1; j <= g - 1; j++) {
                 rk[c][LS[c][j]] = j;
+                sum += dist[LS[c][j]][c];
+                Dsum[j] = min(Dsum[j], sum);
+                D_1[LS[c][j]] = min(D_1[LS[c][j]], dist[LS[c][j]][c]);
             }
         }
     }
@@ -219,148 +216,6 @@ private:
         now_min_ans = answer.get_sum_weight();
     }
 
-    /* 预处理剩估值 */
-    void init_build_list()
-    {
-        cost_list = vector <pair <edgetype, int> > (1);
-        dis_allowed_mx = vector <vector <edgetype> > (g + 1);
-        dis_allowed_mx_1 = vector <edgetype> (g + 1, INF);
-
-        if(parameter&1) return;
-
-        dis_allowed_mx_2 = vector <vector <array<edgetype, 3> > > (g*(g + 1)/2 + 1);
-        idx = vector <vector <int> > (g + 1, vector <int>(g + 1, 0));
-        f_idx = vector <pair<int, int> > (g*(g + 1)/2 + 1, {0, 0});
-        int idx_cnt = 0;
-        for(int i = 1; i <= g; i++) for(int j = i + 1; j <= g; j++)
-            idx[j][i] = idx[i][j] = ++idx_cnt, f_idx[idx_cnt] = {i, j};
-        used_idx = vector <int> (idx_cnt + 1, 0);
-    }
-    
-    /* 在线建立状态 i 对应的表 */
-    void build_list_2(int i)
-    {
-        auto [u, v] = f_idx[i];
-        int p1 = 1, p2 = 1;
-        int len1 = cost_list_1[u].size(), len2 = cost_list_1[v].size();
-        auto Merge_sort_next = [&]()
-        {
-            if(p1 < len1 && p2 < len2)
-            {
-                if(cost_list_1[u][p1].first < cost_list_1[v][p2].first)
-                    return cost_list_1[u][p1++];
-                else
-                    return cost_list_1[v][p2++];
-            }
-            if(p1 < len1) return cost_list_1[u][p1++];
-            if(p2 < len2) return cost_list_1[v][p2++];
-            assert(0);
-        };
-        
-        int len = len1 + len2 - 2;
-        vector <pair<edgetype, int> > pre_info(n + 1);
-        pair <edgetype, edgetype> mi_2 = {INF, INF};
-
-        for(int j = 1; j <= len; j++)
-        {
-            auto [cost, u] = Merge_sort_next();
-            pre_info[u].first += cost;
-            pre_info[u].second++;
-            int updated = 0;
-            if(pre_info[u].second == 1) 
-            {
-                if(mi_2.first > pre_info[u].first)
-                {
-                    mi_2.first = pre_info[u].first;
-                    updated = 1;
-                }
-            }
-            else
-            {
-                if(mi_2.second > pre_info[u].first)
-                {
-                    mi_2.second = pre_info[u].first;
-                    updated = 1;
-                }
-            }
-            if(updated)
-                dis_allowed_mx_2[i].push_back({cost, mi_2.first, mi_2.second});
-        }
-    }
-
-    /* 计算全部集合时的估值 */
-    void calc_dis_allowed_mx()
-    {
-        for(int i = 1; i <= n; i++) 
-            for(int j = 1; j <= g - 1; j++)
-            {
-                if(dist[LS[i][j]][i] > min_full_cover*(g - 1))
-                    break;
-                dis_allowed_mx_1[LS[i][j]] = min(dis_allowed_mx_1[LS[i][j]], dist[LS[i][j]][i]);
-            }
-
-        for(int i = 1; i <= g - 1; i++)
-            while(!cost_list_1[i].empty() && cost_list_1[i].back().first > min_full_cover*(g - 1))
-                cost_list_1[i].pop_back();
-
-        auto Build_cost_list = [&]()
-        {
-            vector <int> pos(g + 1, 1);
-            auto cmp = [&](const pair<int, int>& a, const pair<int, int>& b) {
-                return cost_list_1[a.second][a.first].first > cost_list_1[b.second][b.first].first;
-            };
-            priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(cmp)> pq(cmp);
-            auto ins = [&](int i)
-            {
-                if(pos[i] < (int)cost_list_1[i].size())
-                    pq.push({pos[i]++, i});
-            };
-            for(int i = 1; i <= g - 1; i++)
-                ins(i);
-            while(!pq.empty())
-            {
-                auto [p, i] = pq.top();
-                pq.pop();
-                cost_list.push_back(cost_list_1[i][p]);
-                ins(i);
-            }
-        };
-        // Timer::start("Build_cost_list");
-        Build_cost_list();
-        // Timer::stop("Build_cost_list", LogLevel::LOG_INFO);
-
-        // Timer::start("aft");
-        
-        int len = cost_list.size();
-
-        // array<edgetype, 100> now_mi;
-        // for(int i = 0; i <= g - 1; i++) now_mi[i] = INF;
-
-        vector <edgetype> now_mi(g + 1, INF);
-        
-        vector <pair<edgetype, int> > pre_info(n + 1);
-
-    
-        for(int i = 1; i < len; i++)
-        {
-            auto [cost, u] = cost_list[i];
-            pre_info[u].first += cost;
-            pre_info[u].second++;
-            if(now_mi[pre_info[u].second] > pre_info[u].first) 
-            {
-                now_mi[pre_info[u].second] = pre_info[u].first;
-                dis_allowed_mx[0].push_back(cost);
-                for(int j = 1; j <= g - 1; j++)
-                    dis_allowed_mx[j].push_back(now_mi[j]);
-                if(cost < min_full_cover)
-                {
-                    start_dijk = 0;
-                    for(int j = 1; j <= g - 1; j++)
-                        start_dijk = max(start_dijk, (edgetype)(min_full_cover*j - dis_allowed_mx[j].back()));
-                }    
-            }
-        }
-    }
 
     /* 新选根时的预处理 */
     void init_now_root()
@@ -379,7 +234,7 @@ private:
         now_dijk_mx = start_dijk;
         chs = {numeric_limits<double>::max(), -1};
     
-        first_add = 1;
+        //first_add = 1;
     }
 
     /* 更新当前状态的 dijk 最大值 */
@@ -388,28 +243,12 @@ private:
         double now_rig_mx = min(chs.first, next_aver_mx);
         if(current_cover == g - 1)
         {
-            now_dijk_mx = now_rig_mx - dis_allowed_mx_1[res_uncover];
+            now_dijk_mx = now_rig_mx - D_1[res_uncover];
             return;
         }
-        else if(current_cover == g - 2 && (parameter & 1) == 0)
-        {
-            if(!used_idx[res_uncover_2])
-            {
-                used_idx[res_uncover_2] = 1;
-                build_list_2(res_uncover_2);
-            }
-            int it = lower_bound(dis_allowed_mx_2[res_uncover_2].begin(), dis_allowed_mx_2[res_uncover_2].end(), now_rig_mx, 
-            [&](auto x, auto y){return x[0] < y;}) - dis_allowed_mx_2[res_uncover_2].begin() - 1;
-            it = max(0, it);
-            now_dijk_mx = max(now_rig_mx - dis_allowed_mx_2[res_uncover_2][it][1], now_rig_mx*2 - dis_allowed_mx_2[res_uncover_2][it][2]);
-            return;
-        }
-
-        int it = lower_bound(dis_allowed_mx[0].begin(), dis_allowed_mx[0].end(), now_rig_mx, [&](auto x, auto y){return x < y;}) - dis_allowed_mx[0].begin() - 1;
         now_dijk_mx = 0;
-        it = max(0, it);
-        for(int i = 1; i <= g - 1 - current_cover; i++)
-            now_dijk_mx = max(now_dijk_mx, now_rig_mx*i - dis_allowed_mx[i][it]);
+        for(int i = 1; i <= g - current_cover; i++)
+            now_dijk_mx = max(now_dijk_mx, now_rig_mx*i - Dsum[i]);
     }
 
     /* 给 now_answer 添加一条边 */
@@ -537,13 +376,6 @@ private:
         {
             for(int i = 1; i <= g - 1; i++) if(!query_cover[i])
                 res_uncover = i;
-        }
-        else if(current_cover == g - 2 && (parameter & 1) == 0)
-        {
-            vector <int> tmp_uncover;
-            for(int i = 1; i <= g - 1; i++) if(!query_cover[i])
-                tmp_uncover.push_back(i);
-            res_uncover_2 = idx[tmp_uncover[0]][tmp_uncover[1]];
         }
     }
 
@@ -696,11 +528,6 @@ public:
         INF = numeric_limits<edgetype>::max();
         answer = Tree<edgetype>(INF);
     }
-
-    void set_parameter(int parameter)
-    {
-        this->parameter = parameter;
-    }
     
     void set_state(int state)
     {
@@ -717,12 +544,6 @@ public:
         //Log::info("Init dist end");
         calc_min_full_cover();
 
-        if(USE_DUB)
-        {
-            init_build_list();
-            calc_dis_allowed_mx();
-        }
-        
 
         init_debug_info();
 

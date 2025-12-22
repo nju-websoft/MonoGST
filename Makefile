@@ -7,7 +7,7 @@ MONOGST_SRC = src/MonoGST/src
 
 .PHONY: all clean
 
-all: MonoGST MonoGST_abl ImprovAPP PartialOPT PrunedDP
+all: MonoGST MonoGST_v2 MonoGST_abl ImprovAPP PartialOPT PrunedDP
 
 # MonoGST tests
 MonoGST: src/MonoGST/tests/test_Improved2star.cpp $(MONOGST_SRC)/GlobalUtils.cpp $(MONOGST_SRC)/Log.cpp

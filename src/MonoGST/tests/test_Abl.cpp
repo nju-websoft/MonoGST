@@ -11,7 +11,6 @@ int main(int argc, char* argv[]) {
         cout << "Usage: " << argv[0] << " <graphname> <state>\nExample: " << argv[0] << " Toronto 0" << endl;
         return 1;
     }
-    int parameter_val2 =0;
     int edge_type = 0;
     int state = atoi(argv[2]);
     string suffix;
@@ -36,7 +35,6 @@ int main(int argc, char* argv[]) {
         auto query = read_query_file();
         Log::debug("Loaded everything");
         Improved2star_Abl<edgetype> i2s;
-        i2s.set_parameter(parameter_val2);
         i2s.set_state(state);
 
         for(int i = 0; i < (int)query.size(); i++)
@@ -72,20 +70,6 @@ int main(int argc, char* argv[]) {
             if(sum_weight == numeric_limits<double>::max()) sum_weight = -1;
             Log::log(LogLevel::LOG_INFO, "Time: " + to_string(duration) + "s" + " sum_weight: " + to_string(sum_weight));
             Log::log(LogLevel::LOG_IMPORTANT, to_string(duration) + " " + to_string(sum_weight));
-            if(parameter_val2 & 1)
-            {
-                set <int> vex;
-                for(auto [uv, w] : t.get_edges())   
-                {
-                    auto [u, v] = uv;
-                    vex.insert(u), vex.insert(v);
-                }
-                string vs;
-                for(auto x : vex)
-                    vs += to_string(x) + " ";
-                Log::log(LogLevel::LOG_IMPORTANT, vs);
-            }
-            //system("pause");
         }
     };
 
