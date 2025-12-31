@@ -19,6 +19,7 @@ int main(int argc, char* argv[]) {
     else if(state == 5) suffix = "womono";
     else if(state == 3) suffix = "tvedge";
     else if(state == 7) suffix = "MonoGSTPlus";
+    else if(state == 4) suffix = "wosusmono";
     else suffix = "Other";
     Log::setLogFile("results/" + string(argv[1]) + "_ablation_" + suffix + "_result.txt");
     Log::setConsoleLevel(LogLevel::LOG_INFO);   
@@ -39,7 +40,6 @@ int main(int argc, char* argv[]) {
 
         for(int i = 0; i < (int)query.size(); i++)
         {
-            //if(i!=9) continue;
             int gsize = query[i].size();
             map <int, vector <vector<int>>> query_new;
             for(int j = 0; j < gsize; j++)

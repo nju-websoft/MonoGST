@@ -240,6 +240,11 @@ private:
     /* 更新当前状态的 dijk 最大值 */
     void find_dis_allowed_mx()
     {
+        if(!USE_DUB)
+        {
+            now_dijk_mx = numeric_limits<double>::max();
+            return;
+        }
         double now_rig_mx = min(chs.first, next_aver_mx);
         if(current_cover == g - 1)
         {

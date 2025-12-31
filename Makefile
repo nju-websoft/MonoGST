@@ -32,5 +32,8 @@ KKG_Index: src/kkg/test/create_index.cpp
 KKG_Run: src/kkg/test/run_kkg.cpp
 	$(CXX) $(CXXFLAGS) -o $@ src/kkg/test/run_kkg.cpp
 
+2starh: src/2starh/2starh.cpp
+	$(CXX) $(CXXFLAGS) -o $@ src/2starh/2starh.cpp
+
 clean:
-	rm -f MonoGST MonoGST_ab ImprovAPP PartialOPT PrunedDP KKG_Index KKG_Run *.o src/*.o
+	rm -f MonoGST MonoGST_ab ImprovAPP PartialOPT PrunedDP KKG_Index KKG_Run 2starh *.o src/*.o
