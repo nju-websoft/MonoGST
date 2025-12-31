@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
         }
         std::sort(groups.begin(), groups.end(), sort_by_size);
         for (int i = 2; i <= g; ++i) {
-            int new_node = i + g - 1;
+            int new_node = i + n - 1;
             for (auto u : groups[i]) {
                 edges.push_back({u, new_node});
                 weights.push_back(0);
