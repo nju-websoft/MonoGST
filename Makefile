@@ -16,6 +16,13 @@ MonoGST: src/MonoGST/tests/test_Improved2star.cpp $(MONOGST_SRC)/GlobalUtils.cpp
 MonoGST_abl: src/MonoGST/tests/test_Abl.cpp $(MONOGST_SRC)/GlobalUtils.cpp $(MONOGST_SRC)/Log.cpp
 	$(CXX) $(CXXFLAGS) -I$(MONOGST_INC) -DDEBUG -o $@ src/MonoGST/tests/test_Abl.cpp $(MONOGST_SRC)/GlobalUtils.cpp $(MONOGST_SRC)/Log.cpp
 
+# DST
+
+DST: 
+	mkdir -p ./src/DST/build
+	cmake -S ./src/DST -B ./src/DST/build
+	cmake --build ./src/DST/build
+
 # Other algorithms (single-file builds)
 ImprovAPP: src/ImprovAPP/ImprovAPP.cpp
 	$(CXX) $(CXXFLAGS) -o $@ src/ImprovAPP/ImprovAPP.cpp

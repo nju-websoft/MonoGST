@@ -1,0 +1,2 @@
+/usr/bin/ar qc libDST.a 
+/usr/bin/ranlib libDST.a

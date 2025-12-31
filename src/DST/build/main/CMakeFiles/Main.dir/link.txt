@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/Main.dir/src/main.cpp.o -o Main  ../dst/libDST.a ../_deps/fmt-build/libfmt.a 
