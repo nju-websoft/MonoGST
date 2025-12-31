@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 #include <assert.h>
+#include <iomanip>
 
 #include "dst/dst.hpp"
 
@@ -111,7 +112,8 @@ int main(int argc, char** argv) {
         }
         std::clock_t c_end = std::clock();
         freopen(("results/" + graph_file + "_DST_result.txt").c_str(), "w", stdout);
-        double time_elapsed_s = (c_end - c_start) / CLOCKS_PER_SEC;
+        std::cout << std::fixed << std::setprecision(10);
+        double time_elapsed_s = 1.0 * (c_end - c_start) / CLOCKS_PER_SEC;
         std::cout << time_elapsed_s << ' ' << ans << std::endl;
         fclose(stdout);
 
