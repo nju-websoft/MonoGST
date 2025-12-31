@@ -111,8 +111,8 @@ int main(int argc, char** argv) {
         }
         std::clock_t c_end = std::clock();
         freopen(("results/" + graph_file + "_DST_result.txt").c_str(), "w", stdout);
-        double time_elapsed_ms = 1000.0 * (c_end - c_start) / CLOCKS_PER_SEC;
-        std::cout << time_elapsed_ms << ' ' << ans << std::endl;
+        double time_elapsed_s = (c_end - c_start) / CLOCKS_PER_SEC;
+        std::cout << time_elapsed_s << ' ' << ans << std::endl;
         fclose(stdout);
 
         for (int i = 2; i <= g; ++i) {
