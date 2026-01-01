@@ -1,0 +1,27 @@
+# CMake 构建文件
+build/
+cmake-build-*/
+cmake-build/
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+
+# IDE 相关的构建目录
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 其他生成文件
+*.o
+*.a
+*.so
+*.dylib
+*.lib
+*.dll
+*.exe
