@@ -2,6 +2,6 @@
 # The patch step will be re-executed if anything in this file changes.
 # No other meaning or use of this file is supported.
 
-command (connected)=/usr/bin/cmake;-Dcan_fetch=YES;-P;/home/pinkyhead/websoft/MonoGST/src/DST/build/_deps/fmt-subbuild/fmt-populate-prefix/tmp/fmt-populate-gitupdate.cmake
-command (disconnected)=/usr/bin/cmake;-Dcan_fetch=NO;-P;/home/pinkyhead/websoft/MonoGST/src/DST/build/_deps/fmt-subbuild/fmt-populate-prefix/tmp/fmt-populate-gitupdate.cmake
-work_dir=/home/pinkyhead/websoft/MonoGST/src/DST/build/_deps/fmt-src
+command (connected)=/usr/bin/cmake;-Dcan_fetch=YES;-P;/home/pinkyhead/workspace/MonoGST/src/DST/build/_deps/fmt-subbuild/fmt-populate-prefix/tmp/fmt-populate-gitupdate.cmake
+command (disconnected)=/usr/bin/cmake;-Dcan_fetch=NO;-P;/home/pinkyhead/workspace/MonoGST/src/DST/build/_deps/fmt-subbuild/fmt-populate-prefix/tmp/fmt-populate-gitupdate.cmake
+work_dir=/home/pinkyhead/workspace/MonoGST/src/DST/build/_deps/fmt-src

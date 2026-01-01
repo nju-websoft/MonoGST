@@ -3,9 +3,9 @@
 # No other meaning or use of this file is supported.
 
 method=git
-command=/usr/bin/cmake;-P;/home/pinkyhead/websoft/MonoGST/src/DST/build/_deps/fmt-subbuild/fmt-populate-prefix/tmp/fmt-populate-gitclone.cmake
-source_dir=/home/pinkyhead/websoft/MonoGST/src/DST/build/_deps/fmt-src
-work_dir=/home/pinkyhead/websoft/MonoGST/src/DST/build/_deps
+command=/usr/bin/cmake;-P;/home/pinkyhead/workspace/MonoGST/src/DST/build/_deps/fmt-subbuild/fmt-populate-prefix/tmp/fmt-populate-gitclone.cmake
+source_dir=/home/pinkyhead/workspace/MonoGST/src/DST/build/_deps/fmt-src
+work_dir=/home/pinkyhead/workspace/MonoGST/src/DST/build/_deps
 repository=https://github.com/fmtlib/fmt.git
 remote=origin
 init_submodules=TRUE

@@ -1,4 +1,4 @@
-# Install script for directory: /home/pinkyhead/websoft/MonoGST/src/DST/dst
+# Install script for directory: /home/pinkyhead/workspace/MonoGST/src/DST/dst
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,6 +44,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/pinkyhead/websoft/MonoGST/src/DST/build/_deps/fmt-build/cmake_install.cmake")
+  include("/home/pinkyhead/workspace/MonoGST/src/DST/build/_deps/fmt-build/cmake_install.cmake")
 endif()
 

@@ -1,5 +1,5 @@
 main/CMakeFiles/Main.dir/src/main.cpp.o: \
- /home/pinkyhead/websoft/MonoGST/src/DST/main/src/main.cpp \
+ /home/pinkyhead/workspace/MonoGST/src/DST/main/src/main.cpp \
  /usr/include/stdc-predef.h /usr/include/c++/13/ctime \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -183,7 +183,7 @@ main/CMakeFiles/Main.dir/src/main.cpp.o: \
  /usr/include/c++/13/bits/locale_conv.h \
  /usr/include/c++/13/bits/quoted_string.h /usr/include/c++/13/sstream \
  /usr/include/c++/13/bits/sstream.tcc \
- /home/pinkyhead/websoft/MonoGST/src/DST/dst/include/dst/dst.hpp \
+ /home/pinkyhead/workspace/MonoGST/src/DST/dst/include/dst/dst.hpp \
  /usr/include/c++/13/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
@@ -230,11 +230,11 @@ main/CMakeFiles/Main.dir/src/main.cpp.o: \
  /usr/include/c++/13/bits/enable_special_members.h \
  /usr/include/c++/13/unordered_map \
  /usr/include/c++/13/bits/unordered_map.h \
- /home/pinkyhead/websoft/MonoGST/src/DST/build/_deps/fmt-src/include/fmt/ranges.h \
- /home/pinkyhead/websoft/MonoGST/src/DST/build/_deps/fmt-src/include/fmt/format.h \
+ /home/pinkyhead/workspace/MonoGST/src/DST/build/_deps/fmt-src/include/fmt/ranges.h \
+ /home/pinkyhead/workspace/MonoGST/src/DST/build/_deps/fmt-src/include/fmt/format.h \
  /usr/include/c++/13/cstdint /usr/include/c++/13/cstring \
  /usr/include/string.h /usr/include/strings.h \
- /home/pinkyhead/websoft/MonoGST/src/DST/build/_deps/fmt-src/include/fmt/core.h \
+ /home/pinkyhead/workspace/MonoGST/src/DST/build/_deps/fmt-src/include/fmt/core.h \
  /usr/include/boost/container_hash/hash.hpp \
  /usr/include/boost/container_hash/hash_fwd.hpp \
  /usr/include/boost/container_hash/detail/requires_cxx11.hpp \
@@ -338,15 +338,15 @@ main/CMakeFiles/Main.dir/src/main.cpp.o: \
  /usr/include/c++/13/complex /usr/include/c++/13/typeindex \
  /usr/include/c++/13/optional /usr/include/c++/13/variant \
  /usr/include/c++/13/bits/parse_numbers.h \
- /home/pinkyhead/websoft/MonoGST/src/DST/dst/include/dst/consts.hpp \
- /home/pinkyhead/websoft/MonoGST/src/DST/dst/include/dst/utils.hpp \
+ /home/pinkyhead/workspace/MonoGST/src/DST/dst/include/dst/consts.hpp \
+ /home/pinkyhead/workspace/MonoGST/src/DST/dst/include/dst/utils.hpp \
  /usr/include/c++/13/numeric /usr/include/c++/13/bits/stl_numeric.h \
  /usr/include/c++/13/pstl/glue_numeric_defs.h \
  /usr/include/c++/13/functional /usr/include/c++/13/bits/std_function.h \
  /usr/include/c++/13/array /usr/include/c++/13/compare \
- /home/pinkyhead/websoft/MonoGST/src/DST/dst/include/dst/tree.hpp \
+ /home/pinkyhead/workspace/MonoGST/src/DST/dst/include/dst/tree.hpp \
  /usr/include/boost/functional/hash.hpp \
- /home/pinkyhead/websoft/MonoGST/src/DST/dst/include/dst/partree.hpp \
+ /home/pinkyhead/workspace/MonoGST/src/DST/dst/include/dst/partree.hpp \
  /usr/include/c++/13/list /usr/include/c++/13/bits/stl_list.h \
  /usr/include/c++/13/bits/list.tcc \
- /home/pinkyhead/websoft/MonoGST/src/DST/dst/include/dst/dijkstra.hpp
+ /home/pinkyhead/workspace/MonoGST/src/DST/dst/include/dst/dijkstra.hpp
