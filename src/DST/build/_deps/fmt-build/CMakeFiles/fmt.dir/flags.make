@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/pinkyhead/websoft/MonoGST/src/DST/build/_deps/fmt-src/include
+CXX_INCLUDES = -I/home/pinkyhead/workspace/MonoGST/src/DST/build/_deps/fmt-src/include
 
 CXX_FLAGS = 
 

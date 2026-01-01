@@ -19,10 +19,9 @@ MonoGST_abl: src/MonoGST/tests/test_Abl.cpp $(MONOGST_SRC)/GlobalUtils.cpp $(MON
 # DST
 
 DST: 
-	cmake --build ./src/DST/build --target clean
-	mkdir -p ./src/DST/build
-	cmake -S ./src/DST -B ./src/DST/build
-	cmake --build ./src/DST/build
+	mkdir -p src/DST/build
+	cmake -S src/DST -B src/DST/build
+	cmake --build src/DST/build
 
 # Other algorithms (single-file builds)
 ImprovAPP: src/ImprovAPP/ImprovAPP.cpp

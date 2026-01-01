@@ -1,4 +1,4 @@
-# Install script for directory: /home/pinkyhead/websoft/MonoGST/src/DST/main
+# Install script for directory: /home/pinkyhead/workspace/MonoGST/src/DST/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
