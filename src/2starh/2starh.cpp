@@ -70,7 +70,7 @@ double solve(vector <vector <int> > &query)
     vector <vector <double> > dis(n+1);
     vector <vector <int> > pre(n+1);
     for(int i = 1; i <= n; i++) tie(dis[i], pre[i]) = dijk(i);
-    cerr << "End Dijk" << endl;
+    // cerr << "End Dijk" << endl;
     vector <vector <int> > disg(n + 1, vector <int> (g, -1));
     for(int u = 1; u <= n; u++)
     {
@@ -83,7 +83,11 @@ double solve(vector <vector <int> > &query)
             }
         }
     }
-    cerr << "End Disg" << endl; 
+
+    cerr << "End Dijk" << endl;
+
+    double result = 1e18;
+    // cerr << "End Disg" << endl; 
     auto Go_Root_r = [&](int r)
     {
         #define cost(x,y) dis[x][disg[x][y]]
@@ -127,7 +131,7 @@ double solve(vector <vector <int> > &query)
                 {
                     sumv += cost(v,uncovered[i]);
                     sumr += cost(r,uncovered[i]);
-                    double norm = (dis[r][v] + sumv)/sumr;
+                    double norm = sumr == 0 ? (sumv == 0? 0: 1e18):(dis[r][v] + sumv)/sumr;
                     if(norm < minorm_v)
                     {
                         minorm_v = norm;
@@ -138,11 +142,20 @@ double solve(vector <vector <int> > &query)
                 {
                     minorm = minorm_v;
                     best_v = v;
-                    best_prefix = vector <int> (uncovered.begin(), uncovered.begin() + best_i);
+                    best_prefix = vector <int> (uncovered.begin(), uncovered.begin() + best_i + 1);
                 }
             }
             
-            if(minorm > 1e18) return 1e18;
+            if(minorm >= 1e18) return 1e18;
+
+            // cerr << "Uncovered: ";
+            // for(auto i: uncovered)
+            //     cerr << i << " ";
+            // cerr << endl;
+            // cerr << "Best prefix: ";
+            // for(auto i: best_prefix)
+            //     cerr << i << " ";
+            // cerr << endl;
 
             for(auto i: best_prefix) 
             {
@@ -151,16 +164,20 @@ double solve(vector <vector <int> > &query)
                 add_path(r, best_v);
                 add_path(best_v, disg[best_v][i]);
             }
+            if(Treesum > result) return 1e18;
         }
+        // for(auto [uv, _]: T)
+        //     cerr << uv.first << " " << uv.second << " " << dis[uv.first][uv.second] << endl;
+        // cerr << Treesum << '\n';
         return Treesum;
     };
 
-    double result = 1e18;
+    
     for(int r = 1; r <= n; r++)
     {
-        cerr << "Root " << r << endl;
+        // cerr << "Root " << r << endl;
         result = min(result, Go_Root_r(r));
-        cerr << "End Root " << r << endl;
+        // cerr << "End Root " << r << endl;
     }
        
     if(result == 1e18) return -1;
@@ -176,8 +193,9 @@ int main(int argc, char* argv[])
     // ios::sync_with_stdio(0);cin.tie(0);
     string graphname = argv[1];
     Load_Graph(graphname);
+    cerr<<"End Load Graph"<<endl;
     Load_Query(graphname);
-    cerr<<"End Load"<<endl;
+    cerr<<"End Load Query"<<endl;
     freopen(("results/" + graphname + "_2starh_result.txt").c_str(), "w", stdout);
     for(int i = 0; i < query.size(); i++)
     {
@@ -186,8 +204,8 @@ int main(int argc, char* argv[])
         auto result = solve(query[i]);
         auto time_end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::microseconds>(time_end - time_start).count();
-        cerr << duration/1000.0 << result << endl;
-        printf("%.10f %.10f\n", duration/1000.0, result);
+        cerr << duration/1000000.0 << " " << result << endl;
+        printf("%.10f %.10f\n", duration/1000000.0, result);
     }
     return 0;
 }
