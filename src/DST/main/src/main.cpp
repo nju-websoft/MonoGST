@@ -15,9 +15,59 @@ int n, m, g;
 std::vector<std::pair<int, int>> edges;
 std::vector<double> weights;
 std::vector<int> terms;
+std::vector<std::vector<int>> groups;
 
 bool sort_by_size(std::vector<int> &x, std::vector<int> &y) {
     return x.size() < y.size();
+}
+
+void clear() {
+    for (int i = 1; i < g; ++i) {
+        for (auto _ : groups[i]) {
+            edges.pop_back();
+            weights.pop_back();
+        } 
+        terms.pop_back();
+    }
+}
+
+void run() {
+    /* START RUNNING */
+    std::string method = "fast_level2";
+    double alpha = 1;
+    int nthresholds = 50;
+    double ans = 1e18;
+    std::clock_t c_start = std::clock();
+    for (auto root : groups[0]) {
+        // one extra run of dijkstra in constructor to remove unreachable vertices
+        DST dt = DST(edges, weights, root, terms);
+        std::shared_ptr<PartialTreeManager> partree = nullptr;
+        if (method.compare("level2") == 0) {
+            partree = dt.level2_alg();
+        } else if (method.compare("fast_level2") == 0) {
+            partree = dt.fast_level2_alg();
+        } else if (method.compare("level3") == 0) {
+            partree = dt.level3_alg();
+        } else if (method.compare("fast_level3") == 0) {
+            partree = dt.fast_level3_alg(alpha, nthresholds);
+        } else {
+            std::cerr << "unknown method: " << method << std::endl;
+            exit(1);
+        }
+        std::shared_ptr<Tree> tree = partree->to_tree();
+        ans = std::min(ans, tree->cost_trimmed());
+        std::clock_t temp_end = std::clock();
+        double temp_elapsed_s = 1.0 * (temp_end - c_start) / CLOCKS_PER_SEC;
+        if (temp_elapsed_s >= 500) {
+            std::cout << temp_elapsed_s << ' ' << "-1" << std::endl;
+            clear();
+            return;
+        }
+    }
+    std::clock_t c_end = std::clock();
+    double time_elapsed_s = 1.0 * (c_end - c_start) / CLOCKS_PER_SEC;
+    std::cout << time_elapsed_s << ' ' << ans << std::endl;
+    clear();
 }
 
 int main(int argc, char** argv) {
@@ -57,9 +107,10 @@ int main(int argc, char** argv) {
 
     freopen(("data/" + graph_file + "/query.txt").c_str(), "r", stdin);
     freopen(("results/" + graph_file + "_DST_result.txt").c_str(), "w", stdout);
+    std::cout << std::fixed << std::setprecision(10);
 
     // std::vector<int> terms{11, 12, 13};
-    std::vector<std::vector<int>> groups;
+    
     int T; std::cin >> T;
     for (int cas = 1; cas <= T; ++cas) {
         std::cerr << cas <<" start"<< std::endl;
@@ -85,44 +136,7 @@ int main(int argc, char** argv) {
             } 
             terms.push_back(new_node);
         }
-
-        /* START RUNNING */
-        std::string method = "fast_level2";
-        double alpha = 1;
-        int nthresholds = 50;
-        double ans = 1e18;
-        std::clock_t c_start = std::clock();
-        for (auto root : groups[0]) {
-            // one extra run of dijkstra in constructor to remove unreachable vertices
-            DST dt = DST(edges, weights, root, terms);
-            std::shared_ptr<PartialTreeManager> partree = nullptr;
-            if (method.compare("level2") == 0) {
-                partree = dt.level2_alg();
-            } else if (method.compare("fast_level2") == 0) {
-                partree = dt.fast_level2_alg();
-            } else if (method.compare("level3") == 0) {
-                partree = dt.level3_alg();
-            } else if (method.compare("fast_level3") == 0) {
-                partree = dt.fast_level3_alg(alpha, nthresholds);
-            } else {
-                std::cerr << "unknown method: " << method << std::endl;
-                return 1;
-            }
-            std::shared_ptr<Tree> tree = partree->to_tree();
-            ans = std::min(ans, tree->cost_trimmed());
-        }
-        std::clock_t c_end = std::clock();
-        std::cout << std::fixed << std::setprecision(10);
-        double time_elapsed_s = 1.0 * (c_end - c_start) / CLOCKS_PER_SEC;
-        std::cout << time_elapsed_s << ' ' << ans << std::endl;
-        
-        for (int i = 1; i < g; ++i) {
-            for (auto _ : groups[i]) {
-                edges.pop_back();
-                weights.pop_back();
-            } 
-            terms.pop_back();
-        }
+        run();
     }    
     
     fclose(stdin);
