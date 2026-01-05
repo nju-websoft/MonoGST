@@ -45,6 +45,8 @@ ENDIF(NO_FAST3_PRUNE_SUBTREE)
 # see https://github.com/TheLartians/CPM.cmake for more info
 include(cmake/CPM.cmake)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+
 # ---- Subdirectories ----
 add_subdirectory(dst)
 
