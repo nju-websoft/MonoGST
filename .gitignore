@@ -24,3 +24,20 @@ compile_commands.json
 *.lib
 *.dll
 *.exe
+
+# 1) results 目录下仅允许上传 example 前缀的文件/目录
+/results/*
+!/results/example*
+!/results/example*/**
+
+# 2) 不上传根目录所有的 .exe
+/*.exe
+
+# 3) KeyKG_Index 和 data 下仅允许 example 子文件夹内容（包含子文件夹中的内容）
+/KeyKG_Index/*
+!/KeyKG_Index/example/
+!/KeyKG_Index/example/**
+
+/data/*
+!/data/example/
+!/data/example/**

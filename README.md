@@ -22,7 +22,6 @@ Each data directory contains 2 files, including:
 ## Compile Command
 
 - `make MonoGST`  or `g++ -std=c++20 -O2 -g -Isrc/MonoGST/include -DDEBUG -o MonoGST src/MonoGST/tests/test_Improved2star.cpp src/MonoGST/src/GlobalUtils.cpp src/MonoGST/src/Log.cpp` to compile MonoGST+.
-- `make MonoGST_abl` or `g++ -std=c++20 -O2 -g -Isrc/MonoGST/include -DDEBUG -o MonoGST_abl src/MonoGST/tests/test_Abl.cpp src/MonoGST/src/GlobalUtils.cpp src/MonoGST/src/Log.cpp` to compile the ablation experiments of MonoGST+.
 - `make ImprovAPP` or `g++ -std=c++20 -O2 -g -o ImprovAPP src/ImprovAPP/ImprovAPP.cpp` to compile the ImprovAPP.
 - `make PrunedDP` or `g++ -std=c++20 -O2 -g -o PrunedDP src/PrunedDP/PrunedDP.cpp` to compile the PrunedDP.
 - `make PartialOPT` or `g++ -std=c++20 -O2 -g -o PartialOPT src/PartialOPT/PartialOPT.cpp` to compile the PartialOPT.
@@ -34,7 +33,9 @@ The data format and result format are identical in both scenarios described in t
 
 Run MonoGST+ for `example`: `./MonoGST example`.
 
-Run the ablation experiments of MonoGST+ for `example`: `./MonoGST example x`, `x` is an integer parameter to control the variants of MonoGST+. If x=0, it will run `MonoGST`; if x=6, it will run `w/o suspension`; if x=5, it will run `w/o mono.`; if x=3, it will run `trivial edges`; if x=7, it will run `MonoGST+`.
+Run MonoGST for `example`: `./MonoGST example 0` .
+
+Run the ablation experiments of MonoGST+ for `example`: `./MonoGST example x`, `x` is an integer parameter to control the variants of MonoGST+. If x=6, it will run `w/o suspension`; if x=4, it will run `w/o wosusmono`; if x=3, it will run `trivial edges`; if x=7, it will run `MonoGST+`.
 
 Run other baseline `b` except KeyKG+ for `example`: `./b example`, you need replace "`b`" to the name of the baseline.
 

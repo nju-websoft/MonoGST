@@ -11,17 +11,17 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     int edge_type = 0;
-    int state = 7;
+    int state = -1;
     if(argc == 3) state = atoi(argv[2]);
     string suffix;
     if(state == 0) suffix = "MonoGSTBasic";
     else if(state == 6) suffix = "wosusp";
     else if(state == 5) suffix = "womono";
     else if(state == 3) suffix = "tvedge";
-    else if(state == 7) suffix = "MonoGSTPlus";
+    else if(state == 7 || state == -1) suffix = "MonoGSTPlus";
     else if(state == 4) suffix = "wosusmono";
     else suffix = "Other";
-    Log::setLogFile("results/" + string(argv[1]) + "_ablation_" + suffix + "_result.txt");
+    Log::setLogFile("results/" + string(argv[1]) + (state <= 0 ? "_" : "_ablation_") + suffix + "_result.txt");
     Log::setConsoleLevel(LogLevel::LOG_INFO);   
     Log::setFileLevel(LogLevel::LOG_IMPORTANT);   
 

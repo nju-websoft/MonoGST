@@ -1,1 +1,1 @@
-IndexTime: 3.636800 ms.
+IndexTime: 2.948500 ms.
