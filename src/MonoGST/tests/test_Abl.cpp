@@ -29,7 +29,6 @@ int main(int argc, char* argv[]) {
     string dirname = "./data/" + graphname + "/";
     fs_filesystem = dirname;
 
-
     auto Go_I2s = [&]<typename edgetype>()
     {
         Graph<edgetype> g;
@@ -75,7 +74,6 @@ int main(int argc, char* argv[]) {
 
     if(edge_type == 0) Go_I2s.template operator()<double>();
     else Go_I2s.template operator()<int>();
-    
     
     return 0;
 } 
