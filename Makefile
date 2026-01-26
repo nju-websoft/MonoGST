@@ -13,9 +13,6 @@ all: MonoGST MonoGST_v2 MonoGST_abl ImprovAPP PartialOPT PrunedDP
 MonoGST: src/MonoGST/tests/test_Improved2star.cpp $(MONOGST_SRC)/GlobalUtils.cpp $(MONOGST_SRC)/Log.cpp
 	$(CXX) $(CXXFLAGS) -I$(MONOGST_INC) -DDEBUG -o $@ src/MonoGST/tests/test_Improved2star.cpp $(MONOGST_SRC)/GlobalUtils.cpp $(MONOGST_SRC)/Log.cpp
 
-MonoGST_abl: src/MonoGST/tests/test_Abl.cpp $(MONOGST_SRC)/GlobalUtils.cpp $(MONOGST_SRC)/Log.cpp
-	$(CXX) $(CXXFLAGS) -I$(MONOGST_INC) -DDEBUG -o $@ src/MonoGST/tests/test_Abl.cpp $(MONOGST_SRC)/GlobalUtils.cpp $(MONOGST_SRC)/Log.cpp
-
 # Other algorithms (single-file builds)
 ImprovAPP: src/ImprovAPP/ImprovAPP.cpp
 	$(CXX) $(CXXFLAGS) -o $@ src/ImprovAPP/ImprovAPP.cpp

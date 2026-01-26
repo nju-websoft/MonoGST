@@ -9,22 +9,28 @@ template<typename edgetype>
 class Improved2star
 {
 private:
+    int STATE;
+    #define USE_DUB (STATE&1)
+    #define USE_MONO (STATE>>1&1)
+    #define USE_TREE (STATE>>2&1)
+
+    #define eps 1e-8
+
     edgetype INF;
     int n, g;
     Tree <edgetype> answer;
-    edgetype now_min_ans;
+    double now_min_ans;
     vector <vector <edgetype> > dist;
     vector <vector <int> > prev;
     vector <vector<int>> LS;
     vector <vector<int>> rk;
-    vector <edgetype> D_1;
+
     vector <edgetype> Dsum;
+    vector <edgetype> D_1;
 
     vector <vector<pair<int, edgetype>> > ed;
     vector <int> deg;
     vector <vector <int> > cover_groups;
-
-    double start_dijk;
 
     double min_full_cover;
     int min_full_cover_v;
@@ -45,9 +51,8 @@ private:
         cover_size_dijk = vector <double> (g + 1, 0);
     }
 
-    int parameter; // 末位为 0 表示启动 val_2
-
     vector <edgetype> dis;
+    vector <int> used;
     vector <int> pre;
     priority_queue <pair<edgetype, int>, vector<pair<edgetype, int>>, greater<pair<edgetype, int>>> pq;
     vector <int> useful_points;
@@ -55,12 +60,11 @@ private:
     vector <int> prev_uncover;
     vector <double> sum;
     vector <int> query_cover;
-    int res_uncover;
+    int res_uncover, res_uncover_2;
     double next_aver_mx;
     double now_dijk_mx;
     pair<double, int> chs;
     int current_cover;
-
 
     /* 预处理 query 集合顺序 和 trivial 情况提前返回 */
     bool init(const Graph<edgetype>& graph, vector<vector<int>>& query)
@@ -194,10 +198,10 @@ private:
         {
             edgetype sum = 0;
             for(int j = 0; j <= g - 1; j++) 
-                sum += dist[LS[i][j]][i];
-            if(sum / (g - 1) < min_full_cover)
+            sum += dist[LS[i][j]][i];
+            if(1.0 * sum / (g - 1) < min_full_cover)
             {
-                min_full_cover = 1.0*sum / (g - 1);
+                min_full_cover = 1.0 * sum / (g - 1);
                 min_full_cover_v = i;
             }
         }
@@ -210,10 +214,12 @@ private:
         now_min_ans = answer.get_sum_weight();
     }
 
+
     /* 新选根时的预处理 */
     void init_now_root()
     {
         dis = vector <edgetype> (n + 1, INF);
+        used = vector <int> (n + 1,  0);
         pre = vector <int> (n + 1, -1);
         while(!pq.empty())
             pq.pop();
@@ -223,17 +229,20 @@ private:
         sum = vector <double> (n + 1, 0);
         query_cover = vector <int> (g, 0);
         query_cover[0] = 1;
-        res_uncover = 0;
-        now_dijk_mx = INF;
+        res_uncover = 0, res_uncover_2 = 0;
+        now_dijk_mx = numeric_limits<double>::max();
         chs = {numeric_limits<double>::max(), -1};
-
     }
 
     /* 更新当前状态的 dijk 最大值 */
     void find_dis_allowed_mx()
     {
+        if(!USE_DUB)
+        {
+            now_dijk_mx = numeric_limits<double>::max();
+            return;
+        }
         double now_rig_mx = min(chs.first, next_aver_mx);
-
         if(current_cover == g - 1)
         {
             now_dijk_mx = now_rig_mx - D_1[res_uncover];
@@ -258,6 +267,51 @@ private:
         return true; 
     }
 
+    void add_edge_all(int u, vector <int> &par, vector <edgetype> &weight, Tree<edgetype> &now_answer)
+    {
+        while(par[u] != -1)
+        {
+            now_answer.add_edge(u, par[u], weight[u] - weight[par[u]]);
+            u = par[u];
+        }   
+    }
+
+    void calc_cost_bf(int u, vector <int> &transfer_list)
+    {
+        sum[u] = dis[u];
+        for(auto x : transfer_list)
+            if(x == u)
+            {
+                sum[u] = 0;
+                break;
+            }
+        prev_uncover[u] = 0;
+        best[u] = 0;
+
+        int n_prev_uncover = 0;
+        edgetype n_sum = 0;
+        for(int j = 1; j <= g - 1; j++)
+        {
+            int qid = LS[u][j];
+            if(!query_cover[qid])
+            {
+                n_sum = sum[u] + dist[qid][u];
+                n_prev_uncover = prev_uncover[u] + 1;
+
+                if(n_prev_uncover == 1 || 1.0*n_sum * prev_uncover[u] <= 1.0*sum[u] * n_prev_uncover || (j != g - 1 && query_cover[LS[u][j+1]]))
+                {
+                    best[u] = j;
+                    sum[u] = n_sum;
+                    prev_uncover[u] = n_prev_uncover;
+                }
+                else
+                    break;
+            }
+            else
+                best[u] = j;
+        }
+    }
+
     /* dijk 新确定一个节点 dis(r,u) */
     void add_point(int u)
     {
@@ -278,7 +332,7 @@ private:
                 n_sum = sum[u] + dist[qid][u];
                 n_prev_uncover = prev_uncover[u] + 1;
 
-                if(n_prev_uncover == 1 || 1.0*n_sum / n_prev_uncover < 1.0*sum[u] / prev_uncover[u])
+                if(n_prev_uncover == 1 || 1.0*n_sum *prev_uncover[u] <= 1.0*sum[u]*n_prev_uncover)
                 {
                     best[u] = j;
                     sum[u] = n_sum;
@@ -290,11 +344,10 @@ private:
         }
 
 
-        if(1.0*sum[u] / prev_uncover[u] < chs.first)
+        if(1.0*sum[u] / prev_uncover[u] + eps < chs.first)
         {
-            chs = {1.0*sum[u] / prev_uncover[u], u};
+            chs = {sum[u] / prev_uncover[u], u};
             find_dis_allowed_mx();
-           // cerr << "u = " << u << " new dub = " << now_dijk_mx << endl;
         }
     }
     /* 继续跑一段 dijk */
@@ -302,12 +355,14 @@ private:
     {
         while(!pq.empty())
         {
-            if(pq.top().first >= now_dijk_mx)
+            if(pq.top().first > now_dijk_mx)
                 return;
             auto [d, u] = pq.top();
             pq.pop();
-            if(d > dis[u]) continue;
-
+            //if(d > dis[u]) continue;
+            if(used[u]) continue;
+            used[u] = 1;
+            
             add_point(u);
 
             for(auto [v, w] : graph.get_adj()[u])
@@ -347,7 +402,14 @@ private:
         
         for(auto x: cover_cnt)
             if(x == 0)
+            {
+                for(auto y : vex)
+                {
+                    deg[y] = 0;
+                    ed[y].clear();
+                }
                 return;
+            }
 
         auto ck = [&](int x)
         {
@@ -446,6 +508,11 @@ private:
         }
         
         Delete_Leave(now_ans);
+        // if(now_ans.get_sum_weight() < now_min_ans) 
+        // {
+        //     now_min_ans = now_ans.get_sum_weight();
+        //     answer = now_ans;
+        // }
     }
 
     void Reset_cost(int c)
@@ -472,12 +539,12 @@ public:
         INF = numeric_limits<edgetype>::max();
         answer = Tree<edgetype>(INF);
     }
-
-    void set_parameter(int parameter)
-    {
-        this->parameter = parameter;
-    }
     
+    void set_state(int state)
+    {
+        this->STATE = state;
+    }
+
     Tree<edgetype> solve(const Graph<edgetype>& graph, vector<vector<int>>& query)
     {
         // Timer::start("init");
@@ -487,7 +554,7 @@ public:
         init_dist(graph, query);
         //Log::info("Init dist end");
         calc_min_full_cover();
-        //Log::info("Calc min full cover end");
+
 
         init_debug_info();
 
@@ -501,98 +568,95 @@ public:
 
             init_now_root();
             
-            current_cover = 1;
-            next_aver_mx = 1.0*now_min_ans / (g - 1);
+            now_dijk_mx = numeric_limits<double>::max();
             
+            /* 先对 min_full_cover 跑一段 dijk */
+            current_cover = 1;
+            next_aver_mx = now_min_ans / (g - 1);
             dis[r] = 0;
             pq.push({0, r}); 
             run_dijkstra(graph);
 
             int mx_dijk_rk = 0;
 
+
             bool fine = 1;
             double now_sum_weight = 0;
 
             while(current_cover != g) 
             {
-                // cerr << "\n\n";
-                updata_res_uncover();
+                if(USE_DUB)
+                   updata_res_uncover();
 
                 chs = {numeric_limits<double>::max(), -1};
                 for(auto u : useful_points)
                 {
-                    // cerr << u << " " << sum[u] << " " << prev_uncover[u] << " " << best[u] << endl;
-                    if(1.0*sum[u] / prev_uncover[u] < chs.first)
+                    assert(prev_uncover[u] > 0);
+                    if(1.0*sum[u] / prev_uncover[u] + eps < chs.first)
                         chs = {1.0*sum[u] / prev_uncover[u], u};
                 }
-                next_aver_mx = (1.0*now_min_ans - now_sum_weight) / (g - current_cover);
-                find_dis_allowed_mx();
-                // cerr << "before " << now_dijk_mx << endl;
-                run_dijkstra(graph);
-
-                // if(now_sum_weight + chs.first * (g - current_cover) > now_min_ans)
-                // {
-                //     fine = 0;
-                //     break;
-                // }
+                next_aver_mx = (now_min_ans - now_sum_weight) / (g - current_cover);
+                // if(next_aver_mx < chs.first) fine = 0;
+                
+                if(USE_DUB)
+                {
+                    find_dis_allowed_mx();
+                    run_dijkstra(graph);
+                }
+                
 
                 int c = chs.second;
-                transfer_list.push_back(c);
                 int las_cover = current_cover;
                 mx_dijk_rk = max(mx_dijk_rk, dijk_rk[c]);
-                // cerr << "Best candi" << endl;
-                // cerr << chs.first << " " << c << endl;
-                // cerr << now_dijk_mx << endl;
-                // for(auto x : useful_points)
-                //     cerr << x << " " << dis[x] << " " << sum[x] << " " << prev_uncover[x] << " " << best[x] << endl;
 
-                // if(!add_edge(c, pre, dis, now_answer))
-                // {
-                //     fine = 0;
-                //     break;
-                // }
+                if(!USE_TREE) add_edge_all(c, pre, dis, now_answer);
+
                 int cur_best_c = best[c];
                 for(int i = 1; i <= cur_best_c; i++) if(!query_cover[LS[c][i]])
                 {
                     current_cover++;
                     int qid = LS[c][i];
                     query_cover[qid] = 1;
-                    // if(!add_edge(c, prev[qid], dist[qid], now_answer)) 
-                    // {
-                    //     fine = 0;
-                    //     break;
-                    // }
+                    
+                    if(!USE_TREE) add_edge_all(c, prev[qid], dist[qid], now_answer);
+
                     for(auto j : useful_points) 
                     {
-                        if(rk[j][qid] <= best[j]) 
+                        if(USE_MONO)
                         {
-                            sum[j] -= dist[qid][j];
-                            prev_uncover[j] -= 1;
-
-                            while(best[j] != g - 1) 
+                            if(rk[j][qid] <= best[j]) 
                             {
-                                best[j]++;
-                                int n_qid = LS[j][best[j]];
-                                if(query_cover[n_qid]) continue;
+                                sum[j] -= dist[qid][j];
+                                prev_uncover[j] -= 1;
 
-                                if(prev_uncover[j] == 0 || (1.0*sum[j] + dist[n_qid][j]) / (prev_uncover[j] + 1) < 1.0*sum[j] / prev_uncover[j])
+                                while(best[j] != g - 1) 
                                 {
-                                    sum[j] += dist[n_qid][j];
-                                    prev_uncover[j] += 1;
+                                    best[j]++;
+                                    int n_qid = LS[j][best[j]];
+                                    if(query_cover[n_qid]) continue;
+
+                                    if(prev_uncover[j] == 0 || (1.0*sum[j] + dist[n_qid][j]) * prev_uncover[j] <= 1.0*sum[j] * (prev_uncover[j] + 1))
+                                    {
+                                        sum[j] += dist[n_qid][j];
+                                        prev_uncover[j] += 1;
+                                    }
+                                    else 
+                                    {
+                                        --best[j];
+                                        break;
+                                    }    
                                 }
-                                else 
-                                {
-                                    --best[j];
-                                    break;
-                                }    
                             }
                         }
+                        else
+                            calc_cost_bf(j, transfer_list);
+                        
                     }
                 }
-
+                transfer_list.push_back(c);
                 Reset_cost(c);
-
-                now_sum_weight += 1.0*chs.first*(current_cover - las_cover);
+                
+                now_sum_weight += chs.first*(current_cover - las_cover);
                 
 
                 if(fine == 0) break;
@@ -606,11 +670,17 @@ public:
 
             if(!fine) continue;
 
-            no_mid_point();
-            // for(auto c: transfer_list)
-            //     cerr << c << " ";
-            // cerr << endl;
-            Build_Tree(transfer_list);
+            if(USE_TREE)
+            {
+                no_mid_point();
+                Build_Tree(transfer_list);
+            }   
+            else if(now_answer.get_sum_weight() < now_min_ans)
+            {
+                now_min_ans = now_answer.get_sum_weight();
+                answer = now_answer;
+            }
+           
         }
         
         average_point_ratio_all /= query[0].size();
