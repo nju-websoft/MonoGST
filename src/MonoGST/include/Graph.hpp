@@ -89,8 +89,8 @@ Graph<edgetype>::Graph() {
         throw runtime_error("Graph file open failed");
     }
     
-    n = read(), m = read();
-
+    //n = read(), m = read();
+    cin>>n>>m;
     //Log::info("m : " + to_string(m));
 
     adj.assign(n + 1, vector<pair<int, edgetype>>());
@@ -104,7 +104,8 @@ Graph<edgetype>::Graph() {
     for (int i = 0; i < m; ++i) {
         int u, v;
         edgetype w;
-        u = read(), v = read(), w = readDouble();
+        //u = read(), v = read(), w = readDouble();
+        cin>>u>>v>>w;
         if(w != 0)
         {
             max_weight = max(max_weight, w);

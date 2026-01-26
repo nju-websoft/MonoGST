@@ -281,6 +281,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Usage: " << argv[0] << " <graphname>" << std::endl;
         return 1;
     }
+    std::cerr << "Start reading graph" << std::endl;
     graph_file = argv[1];
     freopen(("data/" + graph_file + "/graph.txt").c_str(), "r", stdin);
     std::cin >> n >> m;
@@ -304,7 +305,7 @@ int main(int argc, char* argv[]) {
     }
     fclose(stdin);
     std::cin.clear();
-
+    std::cerr << "Finish reading graph" << std::endl;
     freopen(("data/" + graph_file + "/query.txt").c_str(), "r", stdin);
     freopen(("results/" + graph_file + "_PrunedDP_result.txt").c_str(), "w", stdout);
     int T;
