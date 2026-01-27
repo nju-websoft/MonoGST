@@ -26,6 +26,7 @@ Each data directory contains 2 files, including:
 - `make PrunedDP` or `g++ -std=c++20 -O2 -g -o PrunedDP src/PrunedDP/PrunedDP.cpp` to compile the PrunedDP.
 - `make PartialOPT` or `g++ -std=c++20 -O2 -g -o PartialOPT src/PartialOPT/PartialOPT.cpp` to compile the PartialOPT.
 - `make KKG_Index` or `g++ -std=c++20 -O2 -g -o KKG_Index src/kkg/test/create_index.cpp` to compile the Index-generator for KeyKG+; `make KKG_Run` or `g++ -std=c++20 -O2 -g -o KKG_Run src/kkg/test/run_kkg.cpp` to compile the KeyKG+ itself.
+- `make 2starh` or `g++ -std=c++20 -O2 -g -o 2starh src/2starh/2starh.cpp` to compile the 2-star heuristic.
 
 ### Run Algorithms
 
