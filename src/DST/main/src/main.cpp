@@ -41,6 +41,7 @@ void run() {
     for (auto root : groups[0]) {
         // one extra run of dijkstra in constructor to remove unreachable vertices
         DST dt = DST(edges, weights, root, terms);
+        if (dt.terms.size() < g - 1) continue;
         std::shared_ptr<PartialTreeManager> partree = nullptr;
         if (method.compare("level2") == 0) {
             partree = dt.level2_alg();
@@ -66,6 +67,7 @@ void run() {
     }
     std::clock_t c_end = std::clock();
     double time_elapsed_s = 1.0 * (c_end - c_start) / CLOCKS_PER_SEC;
+    if (ans == 1e18) ans = -1; 
     std::cout << time_elapsed_s << ' ' << ans << std::endl;
     clear();
 }
