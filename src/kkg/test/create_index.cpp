@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 
     string graph_file = "./data/" + graphname;
 
-    FileManager fop("KeyKG_Index/" + graphname);
+    FileManager fop("KKG_Index/" + graphname);
     fop.clearFile("result.txt");
 
     auto GoIndex = [&]<typename EdgeType>()
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 
         DistanceOracle<int, EdgeType, HL_all> DO(g.adjList, 1);
         fop.writeToFile("result.txt", "IndexTime: " + to_string(DO.oracle.cost_time) + " ms.");
-        DO.oracle.Output_Index("KeyKG_Index/" + graphname + "/");
+        DO.oracle.Output_Index("KKG_Index/" + graphname + "/");
     };
     
     if(graph_type == "0") 

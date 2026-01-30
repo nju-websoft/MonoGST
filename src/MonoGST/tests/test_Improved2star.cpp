@@ -15,11 +15,11 @@ int main(int argc, char* argv[]) {
     if(argc == 3) state = atoi(argv[2]);
     string suffix;
     if(state == 0) suffix = "MonoGSTBasic";
-    else if(state == 6) suffix = "wosusp";
-    else if(state == 5) suffix = "womono";
-    else if(state == 3) suffix = "tvedge";
+    else if(state == 6) suffix = "wo_suspension";
+    else if(state == 5) suffix = "wo_filtering";
+    else if(state == 3) suffix = "wo_reselection";
     else if(state == 7 || state == -1) suffix = "MonoGSTPlus";
-    else if(state == 4) suffix = "wosusmono";
+    else if(state == 4) suffix = "wo_suspension_filtering";
     else suffix = "Other";
     Log::setLogFile("results/" + string(argv[1]) + (state <= 0 ? "_" : "_ablation_") + suffix + "_result.txt");
     Log::setConsoleLevel(LogLevel::LOG_INFO);   

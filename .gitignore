@@ -34,9 +34,9 @@ compile_commands.json
 /*.exe
 
 # 3) KeyKG_Index 和 data 下仅允许 example 子文件夹内容（包含子文件夹中的内容）
-/KeyKG_Index/*
-!/KeyKG_Index/example/
-!/KeyKG_Index/example/**
+/KKG_Index/*
+!/KKG_Index/example/
+!/KKG_Index/example/**
 
 /data/*
 !/data/example/

@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     auto GoKKG = [&]<typename EdgeType>()
     {
         LoadGraph<int, EdgeType> g("./data/" + graphname, graph_type == "0" ? 0 : 1, 1);
-        DistanceOracle<int, EdgeType, HL_all> DO(g.adjList, "KeyKG_Index/" + graphname + "/", 1);
+        DistanceOracle<int, EdgeType, HL_all> DO(g.adjList, "KKG_Index/" + graphname + "/", 1);
         KeyKG_plus<int, EdgeType, HL_all> kkg(g.adjList, DO);
     
         auto read_query_file_at = [&](const fs::path& query_file_path)
