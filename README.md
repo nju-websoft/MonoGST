@@ -50,8 +50,6 @@ Before run KeyKG+, you need first build the index of the graph, use `./KKG_Index
 
 Run DST for `example`: `./src/DST/build/main/Main example`.
 
-Run other baseline `b` for `example`: `./b example`, you need replace "`b`" to the name of the baseline of  ` ImprovAPP`, `PrunedDP`, `PartialOPT` or `2starh`.
-
 Run other baselines `b` for `example`: `./b example`. Replace "`b`" with the name of the baseline: `ImprovAPP`, `PrunedDP`, `PartialOPT`, or `2starh`.
 
 The result of the algorithm `b` for example will be replaced in directory `results/example_b_result.txt`, each line of the text outputs the result of an inquiry, with the first value being the time (in seconds) and the second value being the sum of the edge weights in GST. Specifically, the index of the KeyKG+ and its related information will be output to the directory `KeyKG_index/example/index.bin`.
