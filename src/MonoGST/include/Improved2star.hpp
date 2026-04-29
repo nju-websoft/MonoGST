@@ -66,6 +66,88 @@ private:
     pair<double, int> chs;
     int current_cover;
 
+    int res_state;
+    // struct Heap
+    // {
+    //     vector<pair<int, edgetype>> h;// node_id & dis
+    //     vector <int> heap_rk;//node_id -> heap_id
+    //     vector <int> used;
+    //     int Siz;
+    //     Heap(){}
+    //     void Clear(int n)
+    //     {
+    //         for(auto x : used) heap_rk[x] = 0;
+    //         used.clear();
+    //         Siz = 0;
+    //         if(heap_rk.size() < n + 1) heap_rk.resize(n + 1);
+    //         if(h.size() < n + 1) h.resize(n + 1);
+    //     }
+    //     void Swap(int x, int y)
+    //     {
+    //         std::swap(h[x], h[y]);
+    //         std::swap(heap_rk[h[x].first], heap_rk[h[y].first]);
+    //     }
+    //     void up(int x) 
+    //     {
+    //         while (x > 1 && h[x].second < h[x / 2].second)    
+    //         {
+    //             Swap(x, x / 2);
+    //             x /= 2;
+    //         }
+    //     }
+    //       
+    //     void down(int x) 
+    //     {
+    //         while (x * 2 <= Siz) 
+    //         {
+    //             int t = x * 2;
+    //             if (t + 1 <= Siz && h[t + 1].second < h[t].second) t++;
+    //             if (h[t].second >= h[x].second) break;
+    //             Swap(x, t);
+    //             x = t;
+    //         }
+    //     }
+    //
+    //     void push(int x,edgetype d)
+    //     {
+    //         if(heap_rk[x])
+    //         {
+    //             update(x, d);
+    //             return;
+    //         }
+    //         ++Siz;
+    //         h[Siz] = {x, d};
+    //         heap_rk[x] = Siz;
+    //         used.push_back(x);
+    //         up(Siz);
+    //     }
+    //
+    //     void pop()
+    //     {
+    //         heap_rk[h[Siz].first] = 0;
+    //         h[1] = h[Siz];
+    //         heap_rk[h[1].first] = 1;
+    //         --Siz;
+    //         down(1);
+    //     }
+    //
+    //     pair<int, edgetype> top()
+    //     {
+    //         return h[1];
+    //     }
+    //
+    //     void update(int x, edgetype d)
+    //     {
+    //         h[heap_rk[x]].second = d;
+    //         up(heap_rk[x]);
+    //     }
+    //
+    //     bool empty()
+    //     {
+    //         return Siz == 0;
+    //     }
+    // }hp;
+
     /* 预处理 query 集合顺序 和 trivial 情况提前返回 */
     bool init(const Graph<edgetype>& graph, vector<vector<int>>& query)
     {
@@ -78,9 +160,20 @@ private:
             return false;
         }
 
-        for(int i = 1; i < g; i++)
-            if(query[i].size() < query[0].size())
-                swap(query[i], query[0]);
+        vector <int> qsize_id(g);
+        iota(qsize_id.begin(), qsize_id.end(), 0);
+        sort(qsize_id.begin(), qsize_id.end(), [&](int i, int j){return query[i].size() < query[j].size();});
+        // for(int i = 1; i < g; i++)
+        //     if(query[i].size() < query[0].size())
+        //         swap(query[i], query[0]);
+        int qfirst = 0;
+        if(res_state == 0)
+            qfirst = qsize_id[0];
+        else if(res_state == 1)
+            qfirst = qsize_id[g-1];
+        else if(res_state == 2)
+            qfirst = qsize_id[g/2];
+        swap(query[0], query[qfirst]);
         
         if(query[0].size() == 0)
             return false;
@@ -187,6 +280,11 @@ private:
                 D_1[LS[c][j]] = min(D_1[LS[c][j]], dist[LS[c][j]][c]);
             }
         }
+
+        // cerr << "Dsum:\n";
+        // for(int i = 1; i <= g - 1; i++)
+        //     cerr << Dsum[i] << ' ';
+        // cerr << "\n";
     }
     
     /* 计算简单估值和对应中心 */
@@ -210,7 +308,8 @@ private:
         int c = min_full_cover_v;
         for(int i = 0; i < g; i++)
             add_edge(c, prev[LS[c][i]], dist[LS[c][i]], now_answer);
-        answer = now_answer;
+        if(USE_TREE)
+            answer = now_answer;
         now_min_ans = answer.get_sum_weight();
     }
 
@@ -223,6 +322,8 @@ private:
         pre = vector <int> (n + 1, -1);
         while(!pq.empty())
             pq.pop();
+        // hp.Clear(n);
+
         useful_points = vector <int> ();
         best = vector <int> (n + 1, g - 1);
         prev_uncover = vector <int> (n + 1, g - 1);
@@ -242,12 +343,18 @@ private:
             now_dijk_mx = numeric_limits<double>::max();
             return;
         }
-        double now_rig_mx = min(chs.first, next_aver_mx);
-        if(current_cover == g - 1)
+        double now_rig_mx;
+        if(n >= 2000)
+            now_rig_mx = min(chs.first, next_aver_mx);
+        else
+            now_rig_mx = chs.first;
+        
+        if(n >= 2000 && current_cover == g - 1)
         {
             now_dijk_mx = now_rig_mx - D_1[res_uncover];
             return;
         }
+
         now_dijk_mx = 0;
         for(int i = 1; i <= g - current_cover; i++)
             now_dijk_mx = max(now_dijk_mx, now_rig_mx*i - Dsum[i]);
@@ -269,22 +376,28 @@ private:
 
     void add_edge_all(int u, vector <int> &par, vector <edgetype> &weight, Tree<edgetype> &now_answer)
     {
+        // cerr << "addedge start" << '\n';
         while(par[u] != -1)
         {
             now_answer.add_edge(u, par[u], weight[u] - weight[par[u]]);
+            //cerr << u << ' ' << par[u] << '\n';
             u = par[u];
         }   
+        // cerr << "addedge end" << '\n';
     }
 
     void calc_cost_bf(int u, vector <int> &transfer_list)
     {
         sum[u] = dis[u];
-        for(auto x : transfer_list)
+        if(n >= 2000)
+        {
+            for(auto x : transfer_list)
             if(x == u)
             {
                 sum[u] = 0;
                 break;
             }
+        }
         prev_uncover[u] = 0;
         best[u] = 0;
 
@@ -298,7 +411,7 @@ private:
                 n_sum = sum[u] + dist[qid][u];
                 n_prev_uncover = prev_uncover[u] + 1;
 
-                if(n_prev_uncover == 1 || 1.0*n_sum * prev_uncover[u] <= 1.0*sum[u] * n_prev_uncover || (j != g - 1 && query_cover[LS[u][j+1]]))
+                if(n_prev_uncover == 1 || 1.0*n_sum * prev_uncover[u] <= 1.0*sum[u] * n_prev_uncover)// || (j != g - 1 && query_cover[LS[u][j+1]]))
                 {
                     best[u] = j;
                     sum[u] = n_sum;
@@ -315,6 +428,7 @@ private:
     /* dijk 新确定一个节点 dis(r,u) */
     void add_point(int u)
     {
+        // cerr << "Dijk add point " << u << '\n';
         useful_points.push_back(u);
         dijk_rk[u] = useful_points.size();
 
@@ -343,11 +457,12 @@ private:
             }
         }
 
-
+        // cerr << "<c,p,s>=" << "<" << u << ", " << best[u] + 1 << ", " << 1.0*sum[u]/prev_uncover[u] << ">\n";
         if(1.0*sum[u] / prev_uncover[u] + eps < chs.first)
         {
             chs = {sum[u] / prev_uncover[u], u};
             find_dis_allowed_mx();
+            // cerr << "overline d=" << now_dijk_mx << '\n';
         }
     }
     /* 继续跑一段 dijk */
@@ -359,7 +474,9 @@ private:
                 return;
             auto [d, u] = pq.top();
             pq.pop();
-            //if(d > dis[u]) continue;
+            // auto [u, d] = hp.top();
+            // hp.pop();
+            if(d > dis[u]) continue;
             if(used[u]) continue;
             used[u] = 1;
             
@@ -369,6 +486,7 @@ private:
             {
                 if(dis[v] > dis[u] + w)
                     dis[v] = dis[u] + w, pre[v] = u, pq.push({dis[v], v});
+                    // dis[v] = dis[u] + w, pre[v] = u, hp.push(v, dis[v]);
             }
         }
     }
@@ -508,11 +626,14 @@ private:
         }
         
         Delete_Leave(now_ans);
-        // if(now_ans.get_sum_weight() < now_min_ans) 
-        // {
-        //     now_min_ans = now_ans.get_sum_weight();
-        //     answer = now_ans;
-        // }
+        if(n >= 2000)
+        {
+            if(now_ans.get_sum_weight() < now_min_ans) 
+            {
+                now_min_ans = now_ans.get_sum_weight();
+                answer = now_ans;
+            }
+        }
     }
 
     void Reset_cost(int c)
@@ -542,6 +663,12 @@ public:
     
     void set_state(int state)
     {
+        if(state > 7)
+        {
+            state = 7;
+            res_state = state - 7;
+        }
+        else res_state = 0;
         this->STATE = state;
     }
 
@@ -575,7 +702,9 @@ public:
             next_aver_mx = now_min_ans / (g - 1);
             dis[r] = 0;
             pq.push({0, r}); 
-            run_dijkstra(graph);
+            // hp.push(r, 0);
+            if(n >= 2000 || !USE_DUB)
+                run_dijkstra(graph);
 
             int mx_dijk_rk = 0;
 
@@ -592,6 +721,7 @@ public:
                 for(auto u : useful_points)
                 {
                     assert(prev_uncover[u] > 0);
+                    //cerr << u << ' ' << sum[u] << ' ' << prev_uncover[u] << " " << 1.0*sum[u] / prev_uncover[u] + eps << '\n';
                     if(1.0*sum[u] / prev_uncover[u] + eps < chs.first)
                         chs = {1.0*sum[u] / prev_uncover[u], u};
                 }
@@ -600,11 +730,32 @@ public:
                 
                 if(USE_DUB)
                 {
+                    //cerr << "f_0 = " << chs.first << '\n';
                     find_dis_allowed_mx();
+                    //cerr << "before: overline d=" << now_dijk_mx << '\n';
                     run_dijkstra(graph);
+                    //cerr << "after: overline d=" << now_dijk_mx << '\n';
                 }
                 
-
+                // auto Print = [&](int v)
+                // {
+                //     cerr << "v=" << v << '\n';
+                //     double vsum = dis[v];
+                //     int vprev = 0;
+                //     for(int i=1;i<=g-1;i++)
+                //     {
+                //         int qid = LS[v][i];
+                //         if(!query_cover[qid])
+                //         {
+                //             vsum += dist[qid][v];
+                //             vprev += 1;
+                //         }
+                //         cerr <<vsum/vprev << ' ';
+                //     }
+                //     cerr << "\n";
+                // };
+                // Print(5);
+                
                 int c = chs.second;
                 int las_cover = current_cover;
                 mx_dijk_rk = max(mx_dijk_rk, dijk_rk[c]);
@@ -612,6 +763,14 @@ public:
                 if(!USE_TREE) add_edge_all(c, pre, dis, now_answer);
 
                 int cur_best_c = best[c];
+                // cerr << "start c=" << c << '\n';
+                // cerr << "cost=" << chs.first << '\n';
+                // cerr << "cur_best_c=" << cur_best_c << '\n';
+                // cerr << "GI[c]=[";
+                // for(int i = 1; i <= g - 1; i++)
+                //     cerr << LS[c][i] + 1 << ",]"[i==g-1];
+                // cerr << "\n";
+
                 for(int i = 1; i <= cur_best_c; i++) if(!query_cover[LS[c][i]])
                 {
                     current_cover++;
@@ -619,6 +778,8 @@ public:
                     query_cover[qid] = 1;
                     
                     if(!USE_TREE) add_edge_all(c, prev[qid], dist[qid], now_answer);
+                    
+                    // std::cerr << "Connected group " << qid+1 << '\n';
 
                     for(auto j : useful_points) 
                     {
@@ -635,7 +796,7 @@ public:
                                     int n_qid = LS[j][best[j]];
                                     if(query_cover[n_qid]) continue;
 
-                                    if(prev_uncover[j] == 0 || (1.0*sum[j] + dist[n_qid][j]) * prev_uncover[j] <= 1.0*sum[j] * (prev_uncover[j] + 1))
+                                    if(prev_uncover[j] == 0 || (1.0*sum[j] + dist[n_qid][j]) * prev_uncover[j] - eps <= 1.0*sum[j] * (prev_uncover[j] + 1))
                                     {
                                         sum[j] += dist[n_qid][j];
                                         prev_uncover[j] += 1;
@@ -653,8 +814,13 @@ public:
                         
                     }
                 }
+                // for(auto x : useful_points)
+                //     cerr << "<" << x << ", " << best[x] + 1 << ", " << 1.0*sum[x]/prev_uncover[x] << ">\n";
+                // cerr << "overline d=" << now_dijk_mx << '\n';
+                // cerr << "end c=" << c << "\n\n";
                 transfer_list.push_back(c);
-                Reset_cost(c);
+                if(n >= 2000)
+                    Reset_cost(c);
                 
                 now_sum_weight += chs.first*(current_cover - las_cover);
                 
@@ -674,6 +840,10 @@ public:
             {
                 no_mid_point();
                 Build_Tree(transfer_list);
+                // cerr << "transfer_list:";
+                // for(auto c: transfer_list)
+                //     cerr << c << ' ';
+                // cerr << "\n";
             }   
             else if(now_answer.get_sum_weight() < now_min_ans)
             {

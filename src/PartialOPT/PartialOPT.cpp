@@ -1,7 +1,5 @@
 #include<bits/stdc++.h>
 #pragma GCC optimize(2) 
-#define maxm 30000005
-#define maxn 15000005
 using namespace std;
 const int para_h = 3;
 const double inf = 1e18;
@@ -10,7 +8,8 @@ struct Group
 {
 	int sz;
 	vector<int> a;
-}grp[maxn];
+};
+vector<Group> grp;
 bool operator < (Group A,Group B){return A.sz<B.sz;}
 struct edge
 {
@@ -42,13 +41,12 @@ void readgraph()
 	}
 	fclose(stdin);
 }
-bool inq[maxn];
 vector<int> used;
 vector<double> dis2;
 vector<int> preu2,preid2;
 void sssp(vector<int> s,vector<double> &dis,vector<int> &preu,vector<int> &preid)
 {
-	used.clear();used.resize(maxn);
+	used.assign(n + 5, 0);
 	for(int i=1;i<=n;++i)dis[i]=inf,used[i]=0,preu[i]=0,preid[i]=0;
 	priority_queue < pair<double,int> > pq;
 	for(int x:s)pq.push(make_pair(0,x)),dis[x]=0;
@@ -147,21 +145,16 @@ double exlhlerA(int r,vector<Group> grp,vector<int> &anse)
 	return res;
 }
 
-#define maxS 17
-vector< vector<int> > vis;
+vector< vector<char> > vis;
 vector< vector<double> > dp;
 vector< vector< vector<int> > > F;
 
 double DPBF(int r,vector<Group> grp,vector<int> &anse,int h)
 {
-
- 	for(int i=0;i<maxn;++i)
-    	for(int j=0;j<maxS;++j)
-    	{
-    		vis[i][j]=0;
-    		dp[i][j]=0;
-    		F[i][j].clear();
-		}
+	int state_cnt = 1 << h;
+	vis.assign(n + 5, vector<char>(state_cnt, 0));
+	dp.assign(n + 5, vector<double>(state_cnt, 0));
+	F.assign(n + 5, vector<vector<int>>(state_cnt));
 	anse.clear();
 	priority_queue< pair<double,pair<int,int> > > q;
 	for(int i=0;i<h-1;++i)
@@ -217,12 +210,14 @@ double DPBF(int r,vector<Group> grp,vector<int> &anse,int h)
 	return inf;
 }
 
-int d[maxn],g_cnt[maxn];
-vector< pair<int,int> > G[maxn];
-vector<int> has[maxn];
+vector<int> d,g_cnt;
+vector<vector<pair<int,int>>> G;
+vector<vector<int>> has;
 double reduce_tree(vector<int> Ans2,vector<int> &Ans3)
 {
-	for(int i=1;i<=n;++i)d[i]=-1,has[i].clear(),G[i].clear();
+	d.assign(n + 5, -1);
+	has.assign(n + 5, {});
+	G.assign(n + 5, {});
 	for(int e:Ans2)
 	{
 		int u=U[e],v=V[e];
@@ -230,7 +225,7 @@ double reduce_tree(vector<int> Ans2,vector<int> &Ans3)
 		G[v].push_back(make_pair(u,e));
 		d[u]++;d[v]++;
 	}
-	for(int i=1;i<=k;++i)g_cnt[i]=0;
+	g_cnt.assign(k + 1, 0);
 	for(int i=1;i<=k;++i)
 		for(int x:grp[i].a)if(d[x]>=0) 
 		{
@@ -285,7 +280,7 @@ double reduce_tree(vector<int> Ans2,vector<int> &Ans3)
 double PartialOPT(int h)
 {
 	time_t st=time(nullptr);
-	sort(grp+1,grp+k+1);
+	sort(grp.begin() + 1, grp.begin() + k + 1);
 	double ans=inf;
 	vector<int> Ans;
 	for(int r:grp[1].a)
@@ -331,24 +326,25 @@ double PartialOPT(int h)
 	return ans;
 }
 
-int numg[1005];
-double Ans[1005],Tim[1005];
+vector<int> numg;
+vector<double> Ans,Tim;
 
 void work()
 {
-	vis.clear(),dp.clear(),F.clear();
-	vis.resize(maxn);dp.resize(maxn);F.resize(maxn);
-	preu2.resize(maxn+5),preid2.resize(maxn+5),dis2.resize(maxn+5);
-  	for(int i=0;i<maxn;++i)vis[i].resize(maxS),dp[i].resize(maxS),F[i].resize(maxS);
+	preu2.resize(n + 5),preid2.resize(n + 5),dis2.resize(n + 5);
 	freopen(("data/" + graph_file + "/query.txt").c_str(), "r", stdin);
 	int Q;
 	scanf("%d",&Q);
+	numg.resize(Q + 1);
+	Ans.resize(Q + 1);
+	Tim.resize(Q + 1);
 	for(int cas=1;cas<=Q;++cas)
 	{
 		cerr<<cas<<" start"<<endl;
 		scanf("%d",&k);
 		numg[cas]=k;
 		cerr<<cas<<" g="<<k<<endl;
+		grp.assign(k + 1, {});
 		for(int i=1;i<=k;++i)
 		{
 			scanf("%d",&grp[i].sz);
@@ -363,7 +359,6 @@ void work()
 		}
 		if(k==1)
 		{
-			for(int i=1;i<=k;++i)grp[i].a.clear(),grp[i].sz=0;
 			Ans[cas]=0;Tim[cas]=0;
 			cerr<<"time = "<<Tim[cas]<<" "<<Ans[cas]<<endl;
 			continue;
@@ -372,7 +367,6 @@ void work()
     	Ans[cas]=PartialOPT(para_h);
     	Tim[cas]=chrono::duration_cast<chrono::microseconds>(chrono::high_resolution_clock::now() - st).count()/1000000.0;
     	cerr<<"time = "<<Tim[cas]<<" "<<Ans[cas]<<endl;
-		for(int i=1;i<=k;++i)grp[i].a.clear(),grp[i].sz=0;
 	}
 	fclose(stdin);
 	freopen(("results/" + graph_file + "_PartialOPT_result.txt").c_str(), "w", stdout);

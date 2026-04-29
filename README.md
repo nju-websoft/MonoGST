@@ -8,7 +8,7 @@ C++ (need to support C++20)
 
 ## Data
 
-Our data is available from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18425871.svg)](https://doi.org/10.5281/zenodo.18425871).
+Our data is available from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19880830.svg)](https://doi.org/10.5281/zenodo.19880830).
 
 Extract all the .zip files into the directory `data`, you could see `data/example` for an example. 
 
@@ -28,6 +28,7 @@ Each data directory contains 2 files, including:
 - `make KKG_Index` or `g++ -std=c++20 -O2 -g -o KKG_Index src/kkg/test/create_index.cpp` to compile the Index-generator for KeyKG+; `make KKG_Run` or `g++ -std=c++20 -O2 -g -o KKG_Run src/kkg/test/run_kkg.cpp` to compile the KeyKG+ itself.
 - `make 2starh` or `g++ -std=c++20 -O2 -g -o 2starh src/2starh/2starh.cpp` to compile the 2-star heuristic.
 - `make DST` to compile the DST. Currently, we have only conducted experiments with this algorithm in an Ubuntu environment. According to the requirements specified in the original author's paper, the necessary environment is as follows: C++ 17 or later, Boost, CMake. In Ubuntu, these can be installed via
+    
     ```
     apt install -y make \
                 build-essential \
@@ -44,7 +45,7 @@ Run MonoGST+ for `example`: `./MonoGST example`.
 
 Run MonoGST for `example`: `./MonoGST example 0` .
 
-Run the ablation experiments of MonoGST+ for `example`: `./MonoGST example x`, `x` is an integer parameter to control the variants of MonoGST+. If x=6, it will run `w/o suspension`; if x=4, it will run `w/o suspension & filtering`; if x=3, it will run `w/o re-selection`; if x=7, it will run `MonoGST+`.
+Run the ablation experiments of MonoGST+ for `example`: `./MonoGST example x`, `x` is an integer parameter to control the variants of MonoGST+. If x=6, it will run `w/o suspension`; if x=4, it will run `w/o suspension & filtering`; if x=3, it will run `w/o re-selection`; if x=7, it will run `MonoGST+`; if x=8, it will run `largest group`; if x=9, it will run `median group`.
 
 Before run KeyKG+, you need first build the index of the graph, use `./KKG_Index example` to finish it, then you could use `./KKG_Run example` to answer all queries for the graph.
 

@@ -19,9 +19,19 @@ void Load_Graph(string graphname)
 }
 void Load_Query(string graphname)
 {
-    freopen(("data/" + graphname + "/query.txt").c_str(), "r", stdin);
-    int q;
-    cin >> q;
+    if (!freopen(("data/" + graphname + "/query.txt").c_str(), "r", stdin))
+    {
+        cerr << "[ERROR] Failed to open query file: data/" << graphname << "/query.txt" << endl;
+        exit(1);
+    }
+    // Reopen stdin after reading graph may leave cin in eof/fail state.
+    cin.clear();
+    int q = 0;
+    if (!(cin >> q))
+    {
+        cerr << "[ERROR] Invalid query count in data/" << graphname << "/query.txt" << endl;
+        exit(1);
+    }
     query.resize(q);
     for(int i = 0; i < q; i++)
     {

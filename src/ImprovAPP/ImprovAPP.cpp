@@ -10,7 +10,8 @@ struct Group
 {
 	int sz;
 	vector<int> a;
-}grp[maxn];
+};
+vector<Group> grp;
 bool operator < (Group A,Group B){return A.sz<B.sz;}
 struct edge
 {
@@ -43,8 +44,8 @@ void readgraph()
 	fclose(stdin);
 }
 vector<int> used;
-vector<double> dis2[12];
-vector<int> preu2[12],preid2[12];
+vector<vector<double>> dis2;
+vector<vector<int>> preu2,preid2;
 void sssp(vector<int> s,vector<double> &dis,vector<int> &preu,vector<int> &preid)
 {
 	used.clear();
@@ -74,7 +75,7 @@ void sssp(vector<int> s,vector<double> &dis,vector<int> &preu,vector<int> &preid
 }
 void init()
 {
-	sort(grp+1,grp+k+1);
+	sort(grp.begin() + 1, grp.begin() + k + 1);
 	for(int i=2;i<=k;++i)
 	{
 		vector<int> st;
@@ -94,21 +95,21 @@ void addpath2(vector<int> &e,int r,int u)
 	}
 }
 
-int cov[12],bel[12];
-int eid[maxm];
+vector<int> cov,bel;
+vector<int> eid;
 bool cmp(const int &x,const int &y)
 {
 	return W[x]<W[y];
 }
-int par[maxn];
+vector<int> par;
 int find(int x)
 {
 	if(par[x]==x)return x;
 	return par[x]=find(par[x]);
 }
-int d[maxn],g_cnt[maxn];
-vector< pair<int,int> > G[maxn];
-vector<int> has[maxn];
+vector<int> d,g_cnt;
+vector<vector<pair<int,int>>> G;
+vector<vector<int>> has;
 double ImprovAPP()
 {
 	init();
@@ -120,7 +121,8 @@ double ImprovAPP()
 		bool ok=1;
 		for(int i=2;i<=k;++i)if(dis2[i][r]>1e12)ok=0;
 		if(!ok)continue;
-		for(int i=1;i<=k;++i)cov[i]=0;
+		cov.assign(k + 1, 0);
+		bel.assign(k + 1, 0);
 		priority_queue< pair<double,int> > pq;
 		for(int i=2;i<=k;++i)pq.push(make_pair(-dis2[i][bel[i]=r],i));
 		vector<int> path;
@@ -157,11 +159,11 @@ double ImprovAPP()
 		}
 	}
 	if(ans>1e12)return -1;
-	int m=Ans.size();
-	for(int i=0;i<m;++i)eid[i]=Ans[i];
+	eid = Ans;
+	par.resize(n + 5);
 	for(int i=1;i<=n;++i)par[i]=i;
-	sort(eid,eid+m,cmp);
-	for(int i=0;i<m;++i)
+	sort(eid.begin(), eid.end(), cmp);
+	for(int i=0;i<(int)eid.size();++i)
 	{
 		int u=U[eid[i]],v=V[eid[i]];
 		if(find(u)!=find(v))
@@ -170,7 +172,9 @@ double ImprovAPP()
 			Ans2.push_back(eid[i]);
 		}
 	}
-	for(int i=1;i<=n;++i)d[i]=-1,G[i].clear(),has[i].clear();
+	d.assign(n + 5, -1);
+	G.assign(n + 5, {});
+	has.assign(n + 5, {});
 	for(int e:Ans2)
 	{
 		int u=U[e],v=V[e];
@@ -178,7 +182,7 @@ double ImprovAPP()
 		G[v].push_back(make_pair(u,e));
 		d[u]++;d[v]++;
 	}
-	for(int i=1;i<=k;++i)g_cnt[i]=0;
+	g_cnt.assign(k + 1, 0);
 	for(int i=1;i<=k;++i)
 		for(int x:grp[i].a)if(d[x]>=0) 
 		{
@@ -230,20 +234,26 @@ double ImprovAPP()
 	return rr;
 }
 
-int numg[1005]; 
-double Ans[1005],Tim[1005];
+vector<int> numg;
+vector<double> Ans,Tim;
 void work()
 {
-	for(int i=0;i<=10;++i)preu2[i].resize(maxn+5),preid2[i].resize(maxn+5),dis2[i].resize(maxn+5);
 	freopen(("data/" + graph_file + "/query.txt").c_str(), "r", stdin);
 	int Q;
 	scanf("%d",&Q);
+	numg.resize(Q + 1);
+	Ans.resize(Q + 1);
+	Tim.resize(Q + 1);
+	dis2.assign(12, vector<double>(n + 5));
+	preu2.assign(12, vector<int>(n + 5));
+	preid2.assign(12, vector<int>(n + 5));
 	for(int cas=1;cas<=Q;++cas)
 	{
 		cerr<<cas<<" start"<<endl;
 		scanf("%d",&k);
 		cerr<<cas<<" g="<<k<<endl;
 		numg[cas]=k;
+		grp.assign(k + 1, {});
 		for(int i=1;i<=k;++i)
 		{
 			scanf("%d",&grp[i].sz);
@@ -258,7 +268,6 @@ void work()
 		}
 		if(k==1)
 		{
-			for(int i=1;i<=k;++i)grp[i].a.clear(),grp[i].sz=0;
 			Ans[cas]=0;Tim[cas]=0;
 			cerr<<"time = "<<Tim[cas]<<" "<<Ans[cas]<<endl;
 			continue;
@@ -267,7 +276,6 @@ void work()
 		Ans[cas]=ImprovAPP();
 		Tim[cas]=chrono::duration_cast<chrono::microseconds>(chrono::high_resolution_clock::now() - st).count()/1000000.0;
 		cerr<<"time = "<<Tim[cas]<<" "<<Ans[cas]<<endl;
-		for(int i=1;i<=k;++i)grp[i].a.clear(),grp[i].sz=0;
 	}
 	fclose(stdin);
 	freopen(("results/" + graph_file + "_ImprovAPP_result.txt").c_str(), "w", stdout);

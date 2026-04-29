@@ -20,6 +20,8 @@ int main(int argc, char* argv[]) {
     else if(state == 3) suffix = "wo_reselection";
     else if(state == 7 || state == -1) suffix = "MonoGSTPlus";
     else if(state == 4) suffix = "wo_suspension_filtering";
+    else if(state == 8) suffix = "largest group";
+    else if(state == 9) suffix = "median group";
     else suffix = "Other";
     Log::setLogFile("results/" + string(argv[1]) + (state <= 0 ? "_" : "_ablation_") + suffix + "_result.txt");
     Log::setConsoleLevel(LogLevel::LOG_INFO);   
