@@ -12,12 +12,12 @@ Our data is available from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1
 
 Extract all the .zip files into the directory `data`, you could see `data/example` for an example. 
 
-Each data contains a `graph.txt` and a `query.txt` used in our experiments, including 5 real-world datasets `Toronto`, `MovieLens`, `DBLP`, `LinkedMDB` and `DBpedia`.
+Each data contains a `graph.txt` and a `query.txt` used in our experiments, including 5 real-world datasets `Toronto`, `MovieLens`, `DBLP`, `LinkedMDB`, `DBpedia` and their queries.
 
 Each data directory contains 2 files, including:
 
 - `graph.txt`: the first line contains two values 'n','m', which is the number of vertices and the number of edges in the graph. Then next m lines contains three values 'u', 'v', 'w' which means there is an undirected edge between 'u' and 'v' weighted by 'w' which is computed by the Informativeness-based Weighting (IW) scheme.
-- `query.txt`: The first value is the number of queries. For each query, the first value is the number of groups 'g'. For the next g lines, the first value is the size 'f' of the group, then the next f values are the vertices in this group. For example, the file `data/example/query.txt` means there is 1 query; in this query, g = 4 groups. The 4 groups are: {1}, {5, 7}, {10, 11}, and {4, 6, 8}. 
+- `query.txt`: The first value is the number of queries. For each query, the first value is the number of groups 'g'. For the next g lines, the first value is the size 'f' of the group, then the next f values are the vertices in this group. For example, the file `data/example/query.txt` means there is 1 query;  in this query, g = 8 groups. The 8 groups are: {1}, {5,6,9}, {4,5}, {2,8}, {3,7,12}, {6,8}, {10,12,13}, {11}.
 
 ## Compile Command
 
